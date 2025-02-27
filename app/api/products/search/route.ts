@@ -4,7 +4,6 @@ import { prisma } from "@/prisma/prisma-client";
 export async function GET(request: NextRequest) {
 	const query = request.nextUrl.searchParams.get('query') || '';
 
-	//@ts-ignore
 	const products = await prisma.product.findMany({
 		where: {
 			name: {

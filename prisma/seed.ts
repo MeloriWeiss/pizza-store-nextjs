@@ -214,7 +214,7 @@ async function up() {
 		data: categories
 	});
 
-	await prisma.ingredient.createMany({
+	await prisma.productIngredient.createMany({
 		data: ingredients
 	});
 
@@ -321,13 +321,23 @@ async function up() {
 				}
 			}
 	});
+	await prisma.cartItem.create({
+		data: {
+				productVariantId: 1,
+				cartId: 1,
+				quantity: 4,
+				ingredients: {
+					connect: [{ id: 5 }, { id: 2 }, { id: 3 }, { id: 7 }]
+				}
+			}
+	});
 }
 
 async function down() {
 	await prisma.$executeRaw`TRUNCATE TABLE "User" RESTART IDENTITY CASCADE`;
 	await prisma.$executeRaw`TRUNCATE TABLE "Category" RESTART IDENTITY CASCADE`;
 	await prisma.$executeRaw`TRUNCATE TABLE "Product" RESTART IDENTITY CASCADE`;
-	await prisma.$executeRaw`TRUNCATE TABLE "Ingredient" RESTART IDENTITY CASCADE`;
+	await prisma.$executeRaw`TRUNCATE TABLE "ProductIngredient" RESTART IDENTITY CASCADE`;
 	await prisma.$executeRaw`TRUNCATE TABLE "ProductVariant" RESTART IDENTITY CASCADE`;
 	await prisma.$executeRaw`TRUNCATE TABLE "Cart" RESTART IDENTITY CASCADE`;
 	await prisma.$executeRaw`TRUNCATE TABLE "CartItem" RESTART IDENTITY CASCADE`;
