@@ -44,7 +44,7 @@ model Product {
   name     String
   imageUrl String
 
-  ingredients Ingredient[]
+  ingredients ProductIngredient[]
   variants    ProductVariant[]
 
   category   Category @relation(fields: [categoryId], references: [id])
@@ -67,7 +67,7 @@ model ProductVariant {
   productId Int
 }
 
-model Ingredient {
+model ProductIngredient {
   id Int @id @default(autoincrement())
 
   name     String
@@ -106,9 +106,9 @@ model CartItem {
   productVariant   ProductVariant @relation(fields: [productVariantId], references: [id])
   productVariantId Int
 
-  quantity Int
+  quantity Int @default(1)
 
-  ingredients Ingredient[]
+  ingredients ProductIngredient[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
