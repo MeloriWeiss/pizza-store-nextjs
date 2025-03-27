@@ -14,7 +14,7 @@ model User {
   fullName String
   email    String   @unique
   password String
-  role     String   @default("USER")
+  role     UserRole @default(USER)
   verified DateTime
 
   provider   String?
@@ -155,4 +155,9 @@ enum OrderStatus {
   PENDING
   SUCCEEDED
   CANCELLED
+}
+
+enum UserRole {
+  ADMIN
+  USER
 }

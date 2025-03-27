@@ -55,7 +55,7 @@ ALTER TABLE "_ProductToProductIngredient" ADD CONSTRAINT "_ProductToProductIngre
 ALTER TABLE "_ProductToProductIngredient" ADD CONSTRAINT "_ProductToProductIngredient_B_fkey" FOREIGN KEY ("B") REFERENCES "ProductIngredient"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "_CartItemToProductIngredient" ADD CONSTRAINT "_CartItemToProductIngredient_A_fkey" FOREIGN KEY ("A") REFERENCES "CartItem"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "_CartItemToProductIngredient" ADD CONSTRAINT "_CartItemToProductIngredient_A_fkey" FOREIGN KEY ("A") REFERENCES "CheckoutCartItem"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_CartItemToProductIngredient" ADD CONSTRAINT "_CartItemToProductIngredient_B_fkey" FOREIGN KEY ("B") REFERENCES "ProductIngredient"("id") ON DELETE CASCADE ON UPDATE CASCADE;

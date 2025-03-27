@@ -4,13 +4,14 @@ import { cookiesConfig } from "@/shared/config/cookies-config";
 import { findOrCreateCart } from "@/shared/lib/find-or-create-cart";
 import { CreateCartItemValues } from "@/shared/services/dto/cart.dto";
 import { updateCartTotalAmount } from "@/shared/lib/update-cart-total-amount";
+import { CartItem } from "@prisma/client";
 
 export async function GET(req: NextRequest) {
 	try {
 		const token = req.cookies.get(cookiesConfig.cartToken)?.value;
 
 		if (!token) {
-			return NextResponse.json({totalAmount: 0, items: []});
+			return NextResponse.json({totalAmount: 0, cartItems: []});
 		}
 
 		const userCart = await prisma.cart.findFirst({
@@ -36,7 +37,7 @@ export async function GET(req: NextRequest) {
 			}
 		});
 
-		return NextResponse.json({items: userCart});
+		return NextResponse.json(userCart);
 	} catch (error) {
 		console.log('CART_GET_SERVER_ERROR', error);
 		return NextResponse.json({error: true, message: 'Не удалось получить корзину'}, {status: 500})
@@ -55,7 +56,7 @@ export async function POST(request: NextRequest) {
 
 		const data: CreateCartItemValues = await request.json();
 
-		const existingCartItem = await prisma.cartItem.findFirst({
+		const suitableCartItems: CartItem[] = await prisma.cartItem.findMany({
 			where: {
 				cartId: userCart.id,
 				productVariantId: data.productVariantId,
@@ -72,8 +73,26 @@ export async function POST(request: NextRequest) {
 			}
 		});
 
+		let existingCartItem: CartItem | null = null;
+
+		if (suitableCartItems) {
+			suitableCartItems.forEach(cartItem => {
+
+				const foundIngredients: number[] = [];
+				cartItem.ingredients.forEach(ingredient => {
+					const foundIngredient = data.ingredients?.find(ingredientId => ingredientId === ingredient.id);
+					if (foundIngredient) {
+						foundIngredients.push(foundIngredient);
+					}
+				});
+				if (foundIngredients.length === cartItem.ingredients.length) {
+					existingCartItem = cartItem;
+					console.log(existingCartItem, data.ingredients)
+				}
+			});
+		}
+
 		if (existingCartItem && existingCartItem.ingredients.length === data.ingredients?.length) {
-			console.log(existingCartItem, '------------', existingCartItem.ingredients)
 			await prisma.cartItem.update({
 				where: {
 					id: existingCartItem.id
@@ -96,7 +115,7 @@ export async function POST(request: NextRequest) {
 		}
 
 		const updatedUserCart = await updateCartTotalAmount(token);
-		const response = NextResponse.json({items: updatedUserCart});
+		const response = NextResponse.json(updatedUserCart);
 		response.cookies.set(cookiesConfig.cartToken, token);
 		return response;
 

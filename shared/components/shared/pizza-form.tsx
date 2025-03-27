@@ -22,7 +22,7 @@ interface Props {
 	className?: string;
 }
 
-export const ChoosePizzaForm: React.FC<Props> = (
+export const PizzaForm: React.FC<Props> = (
 	{
 		imageUrl,
 		name,

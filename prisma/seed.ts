@@ -1,5 +1,5 @@
 import { hashSync } from "bcrypt";
-import { Prisma, PrismaClient } from "@prisma/client";
+import { PrismaClient, UserRole } from "@prisma/client";
 
 const prisma = new PrismaClient()
 
@@ -7,16 +7,16 @@ const users = [
 	{
 		fullName: "User",
 		email: "user@test.ru",
-		password: hashSync("12345", 10),
+		password: hashSync("12345678", 10),
 		verified: new Date(),
-		role: "USER"
+		role: UserRole.USER
 	},
 	{
 		fullName: "Admin",
 		email: "admin@test.ru",
-		password: hashSync("12345", 10),
+		password: hashSync("12345678", 10),
 		verified: new Date(),
-		role: "ADMIN"
+		role: UserRole.ADMIN
 	}
 ]
 
@@ -273,7 +273,7 @@ async function up() {
 			{ productId: pizza2.id, pizzaDoughType: 2, price: 670, size: 40 },
 
 			{ productId: pizza3.id, pizzaDoughType: 1, price: 530, size: 20 },
-			{ productId: pizza3.id, pizzaDoughType: 2, price: 530, size: 30 },
+			{ productId: pizza3.id, pizzaDoughType: 1, price: 530, size: 30 },
 			{ productId: pizza3.id, pizzaDoughType: 2, price: 630, size: 40 },
 
 			{ productId: 1, price: 80 },

@@ -1,8 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import * as SliderPrimitive from '@radix-ui/react-slider';
 import { cn } from "@/shared/lib/utils";
+import { useDebounce } from "use-debounce";
 
 type SliderProps = {
 	className?: string;
@@ -20,6 +21,7 @@ const RangeSlider = React.forwardRef(
 	) => {
 		const initialValue = Array.isArray(value) ? value : [min, max];
 		const [localValues, setLocalValues] = React.useState(initialValue);
+		const [debouncedLocalValues] = useDebounce(localValues, 500);
 
 		React.useEffect(() => {
 			setLocalValues(Array.isArray(value) ? value : [min, max]);
@@ -27,10 +29,13 @@ const RangeSlider = React.forwardRef(
 
 		const handleValueChange = (newValues: number[]) => {
 			setLocalValues(newValues);
-			if (onValueChange) {
-				onValueChange(newValues);
-			}
 		}
+
+		useEffect(() => {
+			if (onValueChange) {
+				onValueChange(localValues);
+			}
+		}, [debouncedLocalValues]);
 
 		return (
 			<SliderPrimitive.Root
