@@ -34,7 +34,7 @@ export async function PATCH(request: NextRequest, {params}) {
 		});
 
 		const updatedUserCart = await updateCartTotalAmount(token);
-		return NextResponse.json({items: updatedUserCart});
+		return NextResponse.json(updatedUserCart);
 
 	} catch (error) {
 		console.log('CART_PATCH_SERVER_ERROR', error);
@@ -69,7 +69,7 @@ export async function DELETE(request: NextRequest, {params}) {
 		});
 
 		const updatedUserCart = await updateCartTotalAmount(token);
-		return NextResponse.json({items: updatedUserCart});
+		return NextResponse.json(updatedUserCart);
 
 	} catch (error) {
 		console.log('CART_DELETE_SERVER_ERROR', error);

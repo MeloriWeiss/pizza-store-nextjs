@@ -4,3 +4,6 @@ export {getPizzaDetails} from "./get-pizza-details";
 export {getCartItemDetails} from "./get-cart-item-details";
 export {getCartDetails} from "./get-cart-details";
 export {calculateCartItemTotalPrice} from "./calc-cart-item-total-price";
+export {findPizzasWithFilters} from "./find-pizzas-with-filters";
+export {sendEmail} from "./send-email";
+export {createPayment} from "./create-payment";

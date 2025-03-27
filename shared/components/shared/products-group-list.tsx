@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import { ProductCard, Title } from "@/shared/components/shared";
 import { cn } from "@/shared/lib/utils";
 import { useIntersectionObserver } from "@reactuses/core";
@@ -42,7 +42,13 @@ export const ProductsGroupList: React.FC<Props> = (
 			<Title text={title} size="lg" className="font-extrabold mb-5"/>
 			<div className={cn('grid grid-cols-3 gap-[50px]', listClassName)}>
 				{products.map((product, index) => (
-					<ProductCard id={product.id} name={product.name} price={product.variants[0].price} imageUrl={product.imageUrl} key={product.id}/>
+					<ProductCard
+						id={product.id}
+						name={product.name}
+						price={product.variants[0].price}
+						imageUrl={product.imageUrl}
+						ingredients={product.ingredients}
+						key={product.id}/>
 				))}
 			</div>
 		</div>

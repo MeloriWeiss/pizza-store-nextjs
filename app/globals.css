@@ -81,6 +81,11 @@ html {
   }
 }
 
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
+
 #nprogress .bar {
   @apply bg-primary !important;
 }

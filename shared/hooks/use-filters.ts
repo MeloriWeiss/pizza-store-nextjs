@@ -1,6 +1,6 @@
 import { useSearchParams } from "next/navigation";
 import { useSet } from "react-use";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 interface PriceRangeProps {
 	priceFrom: number | null;
@@ -44,7 +44,7 @@ export const useFilters = (): ReturnProps => {
 		}));
 	};
 
-	return {
+	return useMemo(() => ({
 		ingredients: selectedIngredients,
 		sizes: selectedSizes,
 		doughTypes: selectedDoughTypes,
@@ -54,5 +54,5 @@ export const useFilters = (): ReturnProps => {
 		onToggleIngredients,
 		onToggleSizes,
 		onToggleDoughTypes
-	}
+	}), [selectedIngredients, selectedSizes, selectedDoughTypes, priceFrom, priceTo]);
 }

@@ -1,43 +1,57 @@
+'use client';
+
 import React from "react";
-import { cn } from "@/shared/lib/utils";
-import { ProductImage, Title } from "@/shared/components/shared";
-import { Button } from "@/shared/components/ui";
-import { ProductType } from "@/types/product.type";
+import { useCartStore } from "@/shared/store";
+import toast from "react-hot-toast";
+import { Product } from "@prisma/client";
+import { PizzaForm } from "@/shared/components/shared/pizza-form";
+import { ProductForm } from "@/shared/components/shared/product-form";
 
 interface Props {
-	imageUrl: string;
-	name: string;
-	price: number;
-	onSubmit: VoidFunction;
-	loading?: boolean;
-	hasVariants?: boolean;
-	className?: string;
+	product: Product;
+	onSubmitAdditional?: VoidFunction;
 }
 
-export const ChooseProductForm: React.FC<Props> = (
-	{
-		imageUrl,
-		name,
-		price,
-		onSubmit,
-		loading,
-		hasVariants,
-		className
+export const ChooseProductForm: React.FC<Props> = ({ product, onSubmitAdditional }) => {
+	const firstVariant = product.variants[0];
+	const isPizzaForm = Boolean(firstVariant.pizzaDoughType);
+	const addCartItem = useCartStore(state => state.addCartItem);
+	const loading = useCartStore(state => state.loading);
+
+	const onSubmit = async (productVariantId?: number, ingredients?: number[]) => {
+		try {
+			const variantId = productVariantId || firstVariant.id;
+			await addCartItem({
+				productVariantId: variantId,
+				ingredients
+			});
+			toast.success(`${product.name} добавлен${isPizzaForm ? "а" : ""} в корзину`);
+			onSubmitAdditional?.();
+		} catch (error) {
+			toast.error("Не удалось добавить товар в корзину");
+			console.log(error);
+		}
+	};
+
+	if (isPizzaForm) {
+		return (
+			<PizzaForm
+				imageUrl={product.imageUrl}
+				name={product.name}
+				ingredients={product.ingredients}
+				variants={product.variants}
+				onSubmit={onSubmit}
+				loading={loading}
+			/>
+		);
 	}
-) => {
 	return (
-		<div className={cn('flex flex-1', className)}>
-			<ProductImage imageUrl={imageUrl} size={20} type={ProductType.product}/>
-			<div className="w-[490px] bg-[#F7F6F5] p-7">
-				<Title text={name} size="md" className="font-extrabold mb-1"/>
-				<Button
-					loading={loading}
-					disabled={!hasVariants && hasVariants !== undefined}
-					onClick={() => onSubmit()}
-					className="h-[55px] px-10 text-base rounded-[18px] w-full mt-10">
-					Добавить в корзину за {price} ₽
-				</Button>
-			</div>
-		</div>
+		<ProductForm
+			imageUrl={product.imageUrl}
+			name={product.name}
+			onSubmit={onSubmit}
+			price={firstVariant.price}
+			loading={loading}
+		/>
 	);
-};
+}
