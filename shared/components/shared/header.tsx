@@ -5,8 +5,9 @@ import { cn } from "@/shared/lib/utils";
 import Image from "next/image";
 import { AuthModal, CartButton, Container, ProfileButton, SearchInput } from "@/shared/components/shared";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
+import { useSession } from "next-auth/react";
 
 interface Props {
 	hasSearch?: boolean;
@@ -15,12 +16,23 @@ interface Props {
 }
 
 export const Header: React.FC<Props> = ({ hasSearch = true, hasCartButton = true, className }) => {
+	const router = useRouter();
 	const [openAuthModal, setOpenAuthModal] = useState(false);
 	const searchParams = useSearchParams();
+	const {data: session} = useSession();
 
 	useEffect(() => {
 		if (searchParams.has('paid')) {
 			toast.success('Заказ успешно оплачен!');
+			router.replace('/');
+		}
+		if (searchParams.has('verified')) {
+			toast.success('Почта успешно подтверждена!');
+			router.replace('/');
+		}
+		if (searchParams.has('not-verified')) {
+			toast.error('Код подтверждения истёк. Мы отправили новый код на вашу почту', {duration: 5000});
+			router.replace('/');
 		}
 	}, []);
 

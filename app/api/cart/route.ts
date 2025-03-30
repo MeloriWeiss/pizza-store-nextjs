@@ -6,9 +6,9 @@ import { CreateCartItemValues } from "@/shared/services/dto/cart.dto";
 import { updateCartTotalAmount } from "@/shared/lib/update-cart-total-amount";
 import { CartItem } from "@prisma/client";
 
-export async function GET(req: NextRequest) {
+export async function GET(request: NextRequest) {
 	try {
-		const token = req.cookies.get(cookiesConfig.cartToken)?.value;
+		const token = request.cookies.get(cookiesConfig.cartToken)?.value;
 
 		if (!token) {
 			return NextResponse.json({totalAmount: 0, cartItems: []});
@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
 
 		return NextResponse.json(userCart);
 	} catch (error) {
-		console.log('CART_GET_SERVER_ERROR', error);
+		console.log('[CART_GET] server error', error);
 		return NextResponse.json({error: true, message: 'Не удалось получить корзину'}, {status: 500})
 	}
 }
@@ -87,7 +87,6 @@ export async function POST(request: NextRequest) {
 				});
 				if (foundIngredients.length === cartItem.ingredients.length) {
 					existingCartItem = cartItem;
-					console.log(existingCartItem, data.ingredients)
 				}
 			});
 		}
@@ -120,7 +119,7 @@ export async function POST(request: NextRequest) {
 		return response;
 
 	} catch (error) {
-		console.log('CART_POST_SERVER_ERROR', error);
+		console.log('[CART_POST] server error', error);
 		return NextResponse.json({error: true, message: 'Не удалось создать корзину'}, {status: 500});
 	}
 }

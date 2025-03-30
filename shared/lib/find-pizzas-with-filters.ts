@@ -1,5 +1,6 @@
 import { priceRangeConfig } from "@/shared/config/price-range-config";
 import { prisma } from "@/prisma/prisma-client";
+import { Category } from "@prisma/client";
 
 export interface GetSearchParams {
 	query?: string;
@@ -60,7 +61,7 @@ export const findPizzasWithFilters = async (params: GetSearchParams) => {
 				}
 			}
 		}
-	});
+	}) as Category[];
 
 	return categories;
 };

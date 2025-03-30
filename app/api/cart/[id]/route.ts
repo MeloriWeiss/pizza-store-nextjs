@@ -3,7 +3,7 @@ import { prisma } from "@/prisma/prisma-client";
 import { updateCartTotalAmount } from "@/shared/lib/update-cart-total-amount";
 import { cookiesConfig } from "@/shared/config/cookies-config";
 
-export async function PATCH(request: NextRequest, {params}) {
+export async function POST(request: NextRequest, {params}) {
 	const id = Number((await params).id);
 
 	try {
@@ -37,7 +37,7 @@ export async function PATCH(request: NextRequest, {params}) {
 		return NextResponse.json(updatedUserCart);
 
 	} catch (error) {
-		console.log('CART_PATCH_SERVER_ERROR', error);
+		console.log('[CART_PATCH] server error', error);
 		return NextResponse.json({error: true, message: 'Не удалось обновить корзину'}, {status: 500});
 	}
 }
@@ -72,7 +72,7 @@ export async function DELETE(request: NextRequest, {params}) {
 		return NextResponse.json(updatedUserCart);
 
 	} catch (error) {
-		console.log('CART_DELETE_SERVER_ERROR', error);
+		console.log('[CART_DELETE] server error', error);
 		return NextResponse.json({error: true, message: 'Не удалось очистить корзину'}, {status: 500});
 	}
 }

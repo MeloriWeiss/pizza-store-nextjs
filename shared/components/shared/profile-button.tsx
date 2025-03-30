@@ -14,7 +14,7 @@ export const ProfileButton: React.FC<Props> = ({ className, onSignIn }) => {
 
 	return (
 		<div className={className}>
-			{!session
+			{!session?.user
 				?
 				<Button onClick={onSignIn} variant="outline" className="flex items-center gap-1">
 					<User size={16} />

@@ -13,29 +13,48 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { checkoutFormSchema, CheckoutFormType } from "@/shared/constants";
 import { createOrder } from "@/app/actions";
 import toast from "react-hot-toast";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { Api } from "@/shared/services/api-client";
 
 export default function CheckoutPage() {
 	const [submitting, setSubmitting] = useState(false);
 	const { items, totalAmount, updateCartItemQuantity, removeCartItem, loading } = useCart();
+	const { data: session } = useSession();
+
 	const form = useForm<CheckoutFormType>({
 		resolver: zodResolver(checkoutFormSchema),
 		defaultValues: {
-			email: "",
-			firstName: "",
-			lastName: "",
-			phone: "",
-			address: "",
-			comment: ""
+			email: '',
+			firstName: '',
+			lastName: '',
+			phone: '',
+			address: '',
+			comment: ''
 		}
 	});
+
+	useEffect(() => {
+		async function fetchUserInfo() {
+			const data = await Api.auth.getMe();
+			const [firstName, lastName] = data.fullName.split(' ');
+
+			form.setValue('firstName', firstName || '');
+			form.setValue('lastName', lastName || '');
+			form.setValue('email', data.email || '');
+		}
+
+		if (session) {
+			fetchUserInfo().then();
+		}
+	}, [session]);
 
 	const onSubmit = async (data: CheckoutFormType) => {
 		try {
 			setSubmitting(true);
 
 			const url = await createOrder(data);
-			toast.success('Переход к оплате...');
+			toast.success("Переход к оплате...");
 
 			if (url) {
 				location.href = url;
@@ -44,7 +63,7 @@ export default function CheckoutPage() {
 		} catch (error) {
 			console.log(error);
 			setSubmitting(false);
-			toast.error('Не удалось создать заказ');
+			toast.error("Не удалось создать заказ");
 		}
 	};
 

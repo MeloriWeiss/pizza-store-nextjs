@@ -1,12 +1,19 @@
 import { AuthOptions } from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
-import { User, UserRole } from "@prisma/client";
+import GoogleProvider from "next-auth/providers/google";
+import { User, UserRole, VerificationCode } from "@prisma/client";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/prisma/prisma-client";
 import { compare, hashSync } from "bcrypt";
+import { sendEmail } from "@/shared/lib";
+import { VerificationTemplate } from "@/shared/components/shared/email-templates/verification";
 
 export const authOptions: AuthOptions = {
 	providers: [
+		GoogleProvider({
+			clientId: process.env.GOOGLE_CLIENT_ID || "",
+			clientSecret: process.env.GOOGLE_CLIENT_SECRET || ""
+		}),
 		GitHubProvider({
 			clientId: process.env.GITHUB_ID,
 			clientSecret: process.env.GITHUB_SECRET,
@@ -17,14 +24,14 @@ export const authOptions: AuthOptions = {
 					email: profile.email,
 					image: profile.avatar_url,
 					role: UserRole.USER
-				}
+				};
 			}
 		}),
 		CredentialsProvider({
-			name: 'Credentials',
+			name: "Credentials",
 			credentials: {
-				email: {label: 'Email', type: 'text'},
-				password: {label: 'Password', type: 'password'},
+				email: { label: "Email", type: "text" },
+				password: { label: "Password", type: "password" }
 			},
 			async authorize(credentials) {
 				if (!credentials) {
@@ -32,7 +39,7 @@ export const authOptions: AuthOptions = {
 				}
 				const values = {
 					email: credentials.email
-				}
+				};
 
 				const user = await prisma.user.findFirst({
 					where: values
@@ -47,6 +54,45 @@ export const authOptions: AuthOptions = {
 				}
 
 				if (!user.verified) {
+					const existingCode = await prisma.verificationCode.findFirst({
+						where: {
+							userId: user.id
+						}
+					}) as VerificationCode;
+
+					if (!existingCode) {
+						const code = Math.floor(10000 + Math.random() * 900000).toString();
+						await prisma.verificationCode.create({
+							data: {
+								code,
+								userId: Number(user.id)
+							}
+						});
+
+						await sendEmail(
+							user.email,
+							"Next Pizza | Подтверждение регистрации",
+							VerificationTemplate({
+								userId: String(user.id),
+								code
+							})
+						);
+						return null;
+					}
+
+					if ((new Date()).getTime() - existingCode.createdAt.getTime() > 600) {
+						await rebuildVerificationCode(user, existingCode.id);
+						return null;
+					}
+
+					await sendEmail(
+						user.email,
+						"Next Pizza | Подтверждение аккаунта",
+						VerificationTemplate({
+							userId: String(user.id),
+							code: existingCode.code
+						})
+					);
 					return null;
 				}
 
@@ -55,18 +101,18 @@ export const authOptions: AuthOptions = {
 					email: user.email,
 					name: user.fullName,
 					role: user.role
-				}
+				};
 			}
 		})
 	],
 	secret: process.env.NEXTAUTH_SECRET,
 	session: {
-		strategy: 'jwt'
+		strategy: "jwt"
 	},
 	callbacks: {
-		async signIn({user, account}) {
+		async signIn({ user, account }) {
 			try {
-				if (account?.provider === 'credentials') {
+				if (account?.provider === "credentials") {
 					return true;
 				}
 				if (!user.email) {
@@ -76,8 +122,8 @@ export const authOptions: AuthOptions = {
 				const foundUser = await prisma.user.findFirst({
 					where: {
 						OR: [
-							{provider: account?.provider, providerId: account?.providerAccountId},
-							{email: user.email}
+							{ provider: account?.provider, providerId: account?.providerAccountId },
+							{ email: user.email }
 						]
 					}
 				}) as User;
@@ -108,11 +154,11 @@ export const authOptions: AuthOptions = {
 
 				return true;
 			} catch (error) {
-				console.error('[SignInError]', error);
+				console.error("[SignInError]", error);
 				return false;
 			}
 		},
-		async jwt({token}) {
+		async jwt({ token }) {
 			if (!token.email) {
 				return token;
 			}
@@ -129,7 +175,7 @@ export const authOptions: AuthOptions = {
 			}
 			return token;
 		},
-		session({session, token}) {
+		session({ session, token }) {
 			if (session.user) {
 				session.user.id = token.id;
 				session.user.role = token.role;
@@ -137,4 +183,4 @@ export const authOptions: AuthOptions = {
 			return session;
 		}
 	}
-}
+};

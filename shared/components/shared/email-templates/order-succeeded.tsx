@@ -1,13 +1,13 @@
 import React from "react";
 import { CartItem } from "@prisma/client";
 
-export interface PayOrderParams {
+interface OrderSucceededParams {
 	orderId: number;
 	totalAmount: number;
 	products: CartItem[];
 }
 
-export const OrderSucceededTemplate: React.FC<PayOrderParams> = (
+export const OrderSucceededTemplate: React.FC<OrderSucceededParams> = (
 	{
 		orderId,
 		totalAmount,

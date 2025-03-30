@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Button, Dialog, DialogContent, DialogTitle } from "@/shared/components";
 import { signIn } from "next-auth/react";
 import { LoginForm } from "@/shared/components/shared/modals/auth-modal/forms/login-form";
+import { SignupForm } from "@/shared/components/shared/modals/auth-modal/forms/signup-form";
 
 interface Props {
 	open: boolean;
@@ -30,8 +31,11 @@ export const AuthModal: React.FC<Props> = ({ open, onClose }) => {
 		<Dialog open={open} onOpenChange={handleClose}>
 			<DialogTitle />
 			<DialogContent aria-describedby={undefined} className="w-[450px] bg-white p-10">
-				{type === AuthType.login &&
+				{type === AuthType.login
+					?
 					<LoginForm onClose={handleClose} />
+					:
+					<SignupForm onClose={handleClose} />
 				}
 				<hr />
 				<div className="flex gap-2">
@@ -59,7 +63,7 @@ export const AuthModal: React.FC<Props> = ({ open, onClose }) => {
 					</Button>
 				</div>
 				<Button variant="outline" onClick={onSwitchType} type="button" className="h-12">
-					{type === AuthType.login ? 'Войти' : 'Регистрация'}
+					{type === AuthType.login ? 'Регистрация' : 'Войти'}
 				</Button>
 			</DialogContent>
 		</Dialog>
