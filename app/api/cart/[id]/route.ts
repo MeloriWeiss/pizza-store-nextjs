@@ -3,7 +3,7 @@ import { prisma } from "@/prisma/prisma-client";
 import { updateCartTotalAmount } from "@/shared/lib/update-cart-total-amount";
 import { cookiesConfig } from "@/shared/config/cookies-config";
 
-export async function POST(request: NextRequest, {params}) {
+export async function PATCH(request: NextRequest, {params}) {
 	const id = Number((await params).id);
 
 	try {

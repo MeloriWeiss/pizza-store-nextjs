@@ -25,23 +25,23 @@ export default function CheckoutPage() {
 	const form = useForm<CheckoutFormType>({
 		resolver: zodResolver(checkoutFormSchema),
 		defaultValues: {
-			email: '',
-			firstName: '',
-			lastName: '',
-			phone: '',
-			address: '',
-			comment: ''
+			email: "",
+			firstName: "",
+			lastName: "",
+			phone: "",
+			address: "",
+			comment: ""
 		}
 	});
 
 	useEffect(() => {
 		async function fetchUserInfo() {
 			const data = await Api.auth.getMe();
-			const [firstName, lastName] = data.fullName.split(' ');
+			const [firstName, lastName] = data.fullName.split(" ");
 
-			form.setValue('firstName', firstName || '');
-			form.setValue('lastName', lastName || '');
-			form.setValue('email', data.email || '');
+			form.setValue("firstName", firstName || "");
+			form.setValue("lastName", lastName || "");
+			form.setValue("email", data.email || "");
 		}
 
 		if (session) {

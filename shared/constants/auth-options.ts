@@ -5,8 +5,9 @@ import { User, UserRole, VerificationCode } from "@prisma/client";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/prisma/prisma-client";
 import { compare, hashSync } from "bcrypt";
-import { sendEmail } from "@/shared/lib";
+import { rebuildVerificationCode, sendEmail } from "@/shared/lib";
 import { VerificationTemplate } from "@/shared/components/shared/email-templates/verification";
+import { verificationConfig } from "@/shared/config/verification-config";
 
 export const authOptions: AuthOptions = {
 	providers: [
@@ -80,8 +81,8 @@ export const authOptions: AuthOptions = {
 						return null;
 					}
 
-					if ((new Date()).getTime() - existingCode.createdAt.getTime() > 600) {
-						await rebuildVerificationCode(user, existingCode.id);
+					if ((new Date()).getTime() - existingCode.createdAt.getTime() > verificationConfig.codeValidityPeriod) {
+						await rebuildVerificationCode(user);
 						return null;
 					}
 
