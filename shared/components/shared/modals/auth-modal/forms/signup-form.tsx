@@ -1,12 +1,7 @@
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import {
-	loginFormSchema,
-	LoginFormType, signupFormSchema,
-	SignupFormType
-} from "@/shared/components/shared/modals/auth-modal/forms/schemas";
+import { signupFormSchema, SignupFormType } from "@/shared/components/shared/modals/auth-modal/forms/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signIn, SignInResponse } from "next-auth/react";
 import toast from "react-hot-toast";
 import { Button, FormInput, Title } from "@/shared/components";
 import { signupUser } from "@/app/actions";
@@ -19,10 +14,10 @@ export const SignupForm: React.FC<Props> = ({ onClose }) => {
 	const form = useForm<SignupFormType>({
 		resolver: zodResolver(signupFormSchema),
 		defaultValues: {
-			fullName: '',
-			email: '',
-			password: '',
-			repeatPassword: ''
+			fullName: "",
+			email: "",
+			password: "",
+			repeatPassword: ""
 		}
 	});
 
@@ -33,13 +28,13 @@ export const SignupForm: React.FC<Props> = ({ onClose }) => {
 				fullName: data.fullName,
 				password: data.password
 			});
-			toast.success('На вашу почту отправлено письмо для подтверждения регистрации', {duration: 5000});
+			toast.success("На вашу почту отправлено письмо для подтверждения регистрации", { duration: 5000 });
 			onClose?.();
 		} catch (error) {
-			console.error('[SignupError]', error);
-			toast.error('Не удалось зарегистрироваться');
+			console.error("[SignupError]", error);
+			toast.error("Не удалось зарегистрироваться");
 		}
-	}
+	};
 
 	return (
 		<FormProvider {...form}>

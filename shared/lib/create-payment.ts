@@ -1,6 +1,3 @@
-import axios from "axios";
-import { PaymentData } from "@/types/yookassa";
-
 interface Params {
 	description: string;
 	orderId: number;

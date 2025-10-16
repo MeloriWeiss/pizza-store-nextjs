@@ -1,6 +1,5 @@
 import React from "react";
 import { FormInput, WhiteBlock } from "@/shared/components/shared";
-import { useSession } from "next-auth/react";
 
 interface Props {
 	className?: string;

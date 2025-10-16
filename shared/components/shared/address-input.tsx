@@ -3,7 +3,7 @@
 import { AddressSuggestions } from "react-dadata";
 import "react-dadata/dist/react-dadata.css";
 import React from "react";
-import { ClearButton, ErrorText, Input, RequiredSymbol } from "@/shared/components";
+import { RequiredSymbol } from "@/shared/components";
 
 interface Props {
 	name: string;
@@ -19,13 +19,9 @@ export const AddressInput: React.FC<Props> = (
 		label,
 		required = true,
 		onChange,
-		className,
-		...props
+		className
 	}
 ) => {
-	const onClearValue = () => {
-	}
-
 	return (
 		<div className={className}>
 			{label &&

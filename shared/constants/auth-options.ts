@@ -45,6 +45,7 @@ export const authOptions: AuthOptions = {
 				const user = await prisma.user.findFirst({
 					where: values
 				}) as User;
+
 				if (!user) {
 					return null;
 				}
